@@ -67,13 +67,47 @@ done
 
 (( debian_sources > 0 )) || die "No supported Debian source file found."
 
-# Refuse common mixed-release or moving-suite configurations.
+# Check release names in suite fields, not repository URLs.
 for file in "${sources[@]}"; do
-    if grep -Ev '^[[:space:]]*(#|$)' "$file" |
-        grep -Eq '(^|[[:space:]/])(bullseye|trixie|forky|sid|stable|oldstable|testing|unstable)([-/[:space:]]|$)'
-    then
-        die "Mixed-release or moving-suite source found: $file"
-    fi
+    suites="$(
+        awk '
+            /^[[:space:]]*#/ { next }
+
+            # deb822 format: Suites: bookworm bookworm-updates
+            /^[[:space:]]*Suites:/ {
+                for (i = 2; i <= NF; i++) {
+                    if ($i ~ /^#/) break
+                    print $i
+                }
+                next
+            }
+
+            # Traditional format:
+            # deb [options] URI suite components
+            $1 == "deb" || $1 == "deb-src" {
+                i = 2
+                if ($i ~ /^\[/) {
+                    while (i <= NF && $i !~ /\]$/) i++
+                    i++
+                }
+                i++  # Skip repository URI.
+                if (i <= NF) print $i
+            }
+        ' "$file"
+    )"
+
+    [[ -n "$suites" ]] ||
+        die "Could not identify repository suites in $file"
+
+    while IFS= read -r suite; do
+        case "$suite" in
+            bookworm|bookworm-updates|bookworm-security)
+                ;;
+            *)
+                die "Unexpected repository suite '$suite' in $file"
+                ;;
+        esac
+    done <<< "$suites"
 done
 
 # Do not start with an incomplete package operation or held packages.
