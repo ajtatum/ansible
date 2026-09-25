@@ -67,7 +67,8 @@ do
             ;;
 
         /etc/apt/sources.list.d/tailscale.list|\
-        /etc/apt/sources.list.d/influxdata.list)
+        /etc/apt/sources.list.d/influxdata.list\
+        /etc/apt/sources.list.d/deb-multimedia.sources)
             ;;
 
         *)
