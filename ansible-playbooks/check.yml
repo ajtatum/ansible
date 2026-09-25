@@ -1,0 +1,14 @@
+- name: Check container access
+  hosts: debian_lxc
+  gather_facts: true
+  tasks:
+    - name: Verify administrative access
+      become: true
+      ansible.builtin.command: id -u
+      changed_when: false
+      register: admin_check
+      failed_when: admin_check.stdout != "0"
+
+    - name: Show Debian version
+      ansible.builtin.debug:
+        msg: "{{ ansible_distribution }} {{ ansible_distribution_version }}"
