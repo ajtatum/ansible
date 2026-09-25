@@ -1,0 +1,40 @@
+- name: Upgrade Debian LXCs to Trixie
+  hosts: debian_lxcs
+  become: true
+  gather_facts: true
+  serial: 1
+  any_errors_fatal: true
+
+  tasks:
+    - name: Confirm this container runs Debian 12
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['distribution'] == 'Debian'
+          - ansible_facts['distribution_major_version'] == '12'
+        fail_msg: "This upgrade requires Debian 12."
+
+    - name: Copy upgrade script
+      ansible.builtin.copy:
+        src: scripts/upgrade-debian.sh
+        dest: /root/upgrade-debian.sh
+        owner: root
+        group: root
+        mode: "0700"
+
+    - name: Run upgrade and save output inside the container
+      ansible.builtin.shell: |
+        /bin/bash /root/upgrade-debian.sh \
+          > /var/log/debian-release-upgrade.log 2>&1
+      args:
+        executable: /bin/bash
+      async: 7200
+      poll: 30
+
+    - name: Read resulting Debian version
+      ansible.builtin.command: cat /etc/debian_version
+      register: debian_version
+      changed_when: false
+
+    - name: Display resulting version
+      ansible.builtin.debug:
+        var: debian_version.stdout

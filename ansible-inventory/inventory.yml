@@ -1,0 +1,140 @@
+---
+all:
+  vars:
+    ansible_user: ajtatum
+    ansible_port: 2263
+  children:
+    debian_lxc:
+      hosts:
+        adguard:
+          ansible_host: 192.168.175.22
+#        ansible:
+#          ansible_host: 192.168.185.62
+        apprise-api:
+          ansible_host: 192.168.175.105
+        apt-cacher-ng:
+          ansible_host: 192.168.175.100
+        authentik:
+          ansible_host: 192.168.175.45
+        backrest:
+          ansible_host: 192.168.175.25
+        bazarr:
+          ansible_host: 192.168.175.166
+        bentopdf:
+          ansible_host: 192.168.175.33
+        beszel:
+          ansible_host: 192.168.175.181
+        byparr:
+          ansible_host: 192.168.175.169
+        bytestash:
+          ansible_host: 192.168.175.118
+        changedetection:
+          ansible_host: 192.168.175.101
+        checkmk:
+          ansible_host: 192.168.175.182
+        emqx:
+          ansible_host: 192.168.175.223
+        flaresolverr:
+          ansible_host: 192.168.175.161
+        forgejo:
+          ansible_host: 192.168.175.175
+        gatus:
+          ansible_host: 192.168.175.116
+        ghost:
+          ansible_host: 192.168.175.108
+        healthchecks:
+          ansible_host: 192.168.175.109
+        homepage:
+          ansible_host: 192.168.175.112
+        influxdbv2-01:
+          ansible_host: 192.168.175.150
+        jolteonlxc:
+          ansible_host: 192.168.175.113
+        joplin:
+          ansible_host: 192.168.175.102
+        karakeep:
+          ansible_host: 192.168.175.23
+        lidarr:
+          ansible_host: 192.168.175.165
+        linkstack:
+          ansible_host: 192.168.175.106
+        mariadb:
+          ansible_host: 192.168.175.230
+        miniflux:
+          ansible_host: 192.168.175.21
+        mongodb:
+          ansible_host: 192.168.175.29
+        myspeed01:
+          ansible_host: 192.168.175.115
+        n8n01:
+          ansible_host: 192.168.175.179
+        navidrome:
+          ansible_host: 192.168.175.126
+        nocodb:
+          ansible_host: 192.168.175.20
+        ntfy:
+          ansible_host: 192.168.175.240
+        omada02:
+          ansible_host: 192.168.185.26
+        openwebui:
+          ansible_host: 192.168.175.41
+        pairdrop:
+          ansible_host: 192.168.175.119
+        paperless-gpt:
+          ansible_host: 192.168.175.110
+        paperlessngx:
+          ansible_host: 192.168.175.31
+        postgresql01:
+          ansible_host: 192.168.175.224
+        prowlarr:
+          ansible_host: 192.168.175.162
+        pulse:
+          ansible_host: 192.168.175.180
+        qbittorrent:
+          ansible_host: 192.168.175.170
+        rabbitmq:
+          ansible_host: 192.168.175.27
+        radarr:
+          ansible_host: 192.168.175.163
+        searxng:
+          ansible_host: 192.168.175.104
+        seerr:
+          ansible_host: 192.168.175.172
+        sonarr:
+          ansible_host: 192.168.175.164
+        sonobarr:
+          ansible_host: 192.168.175.17
+        tautulli:
+          ansible_host: 192.168.175.168
+        transmute:
+          ansible_host: 192.168.175.34
+#        trilium:
+#          ansible_host: 192.168.175.151
+        umami:
+          ansible_host: 192.168.175.107
+        valkey:
+          ansible_host: 192.168.175.125
+        vikunja:
+          ansible_host: 192.168.175.39
+        wallos:
+          ansible_host: 192.168.175.36
+        zipline:
+          ansible_host: 192.168.175.37
+#        zoraxy:
+#          ansible_host: 192.168.175.50
+    ubuntu_lxc:
+      hosts:
+        ollama:
+          ansible_host: 192.168.175.40
+        semaphore:
+          ansible_host: 192.168.175.183
+#        ubflareon:
+#          ansible_host: 192.168.175.28
+#        ubunteelxc:
+#          ansible_host: 192.168.185.120
+        wandavision:
+          ansible_host: 192.168.175.130
+    alpine_lxc:
+      hosts:
+        it-tools:
+          ansible_host: 192.168.175.35
