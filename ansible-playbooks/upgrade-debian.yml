@@ -1,6 +1,7 @@
-- name: Upgrade Debian LXCs to Trixie
-  hosts: debian_lxcs
+- name: Upgrade Debian LXCs from Bookworm to Trixie
+  hosts: debian_lxc
   become: true
+  become_method: sudo
   gather_facts: true
   serial: 1
   any_errors_fatal: true
@@ -11,7 +12,9 @@
         that:
           - ansible_facts['distribution'] == 'Debian'
           - ansible_facts['distribution_major_version'] == '12'
-        fail_msg: "This upgrade requires Debian 12."
+        fail_msg: >-
+          {{ inventory_hostname }} is not running Debian 12.
+          Stopping the rollout.
 
     - name: Copy upgrade script
       ansible.builtin.copy:
@@ -21,20 +24,44 @@
         group: root
         mode: "0700"
 
-    - name: Run upgrade and save output inside the container
-      ansible.builtin.shell: |
-        /bin/bash /root/upgrade-debian.sh \
-          > /var/log/debian-release-upgrade.log 2>&1
-      args:
-        executable: /bin/bash
-      async: 7200
-      poll: 30
+    - name: Run release upgrade
+      block:
+        - name: Upgrade and save output inside the container
+          ansible.builtin.shell: |
+            /bin/bash /root/upgrade-debian.sh \
+              > /var/log/debian-release-upgrade.log 2>&1
+          args:
+            executable: /bin/bash
+          async: 7200
+          poll: 30
+
+      rescue:
+        - name: Read the last 100 lines of the upgrade log
+          ansible.builtin.command:
+            argv:
+              - tail
+              - -n
+              - "100"
+              - /var/log/debian-release-upgrade.log
+          register: upgrade_log
+          changed_when: false
+          failed_when: false
+
+        - name: Stop rollout with diagnostic output
+          ansible.builtin.fail:
+            msg: |
+              Upgrade failed on {{ inventory_hostname }}.
+              Inspect this container before retrying.
+              {{ upgrade_log.stdout | default('Log unavailable.') }}
 
     - name: Read resulting Debian version
       ansible.builtin.command: cat /etc/debian_version
       register: debian_version
       changed_when: false
 
-    - name: Display resulting version
+    - name: Report completion
       ansible.builtin.debug:
-        var: debian_version.stdout
+        msg: >-
+          {{ inventory_hostname }} now reports Debian
+          {{ debian_version.stdout }}.
+          Restart the container and verify its applications.
